@@ -53,3 +53,17 @@ struct window {
 void init_egl(struct display *display, int opaque);
 void fini_egl(struct display *display);
 void init_gl(struct window *window, const char* vert_shader_text, const char* frag_shader_text);
+
+void create_surface(struct window *window);
+void destroy_surface(struct window *window);
+void registry_handle_global_remove(void *data, struct wl_registry *registry,
+			      uint32_t name);
+void registry_handle_global(void *data, struct wl_registry *registry,
+	uint32_t name, const char *interface, uint32_t version);
+void signal_int(int signum);
+void redraw(void *data, struct wl_callback *callback, uint32_t time);
+void usage(int error_code);
+
+const struct wl_callback_listener frame_listener;
+const struct wl_registry_listener registry_listener;
+static int running = 1;
