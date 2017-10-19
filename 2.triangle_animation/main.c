@@ -29,6 +29,7 @@
 #include <signal.h>
 
 #include "../common/common.h"
+#include "../common/window.h"
 
 const char *vert_shader_text =
 	"uniform mat4 rotation;\n"

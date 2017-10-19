@@ -3,8 +3,8 @@ CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/includ
 
 all: triangle_animation \
 
-triangle_animation : ./2.triangle_animation/main.o  ./common/common.o
-	gcc ./2.triangle_animation/main.c ./common/common.c ${CFLAGS} -o $@ ${LIBS}
+triangle_animation : ./2.triangle_animation/main.o  ./common/common.o ./common/window.o
+	gcc ./2.triangle_animation/main.c ./common/common.c ./common/window.c ${CFLAGS} -o $@ ${LIBS}
 
 
 
