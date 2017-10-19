@@ -112,6 +112,7 @@ init_gl(struct window *window, const char* vert_shader_text, const char* frag_sh
 	glBindAttribLocation(program, window->gl.col, "color");
 	glLinkProgram(program);
 
+        // Return the location of a uniform variable.
 	window->gl.rotation_uniform =
 		glGetUniformLocation(program, "rotation");
 }
