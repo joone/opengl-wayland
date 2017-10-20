@@ -8,7 +8,9 @@ triangle_animation : ./2.triangle_animation/main.o  ./common/common.o ./common/w
 triangle : ./1.triangle/main.o  ./common/common.o ./common/window.o
 	gcc ./1.triangle/main.c ./common/common.c ./common/window.c ${CFLAGS} -o $@ ${LIBS}
 
+triangle_simple : ./3.triangle_simple/triangle.o  ./common/common.o ./common/window.o
+	gcc ./3.triangle_simple/triangle.c ./common/common.c ./common/window.c ${CFLAGS} -o $@ ${LIBS}
 
 
 clean:
-	rm -f *.o *~ 
+	rm -f 2.triangle_animation/*.o *~ 
