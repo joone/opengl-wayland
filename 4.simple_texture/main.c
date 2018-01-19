@@ -75,7 +75,9 @@ GLuint CreateSimpleTexture2D() {
       255, 255,   0  // Yellow
    };
 
-   // Use tightly packed data
+   // When texture data is uploaded via glTexImage2D, the rows of pixels are
+   // assumed to be aligned to the value set for GL_UNPACK_ALIGNMENT.
+   // Use tightly packed data.
    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
    // Generate a texture object
@@ -85,10 +87,19 @@ GLuint CreateSimpleTexture2D() {
    glBindTexture(GL_TEXTURE_2D, textureId);
 
    // Load the texture
+   // target
+   // level
+   // internalFormat
+   // width: the width of the image in pixels.
+   // height:
+   // border: ignored in OpenGL ES.
+   // format:
+   // type: the type of the incoming pixel data.
+   // pixels: contains the actual pixel data for the image.
    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE,
        pixels);
 
-   // Set the filtering mode
+   // Set the minification and magnification filtering mode.
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -128,6 +139,15 @@ void redraw(void *data, struct wl_callback *callback, uint32_t time)
 	glClear(GL_COLOR_BUFFER_BIT);
 
     // Load the vertex position
+    // index
+    // size: the number of components per generic vertext attribute.
+    // type
+    // normalized
+    // stride: specified the byte offset between cosecutive gnertic vertext
+    //         attributes.
+    // pointer: specifies a offset of the first component of the first generic
+    //          vertex attributes.
+
     glVertexAttribPointer(0, 3, GL_FLOAT,
                           GL_FALSE, 5 * sizeof(GLfloat), vVertices);
     // Load the texture coordinate
@@ -141,6 +161,12 @@ void redraw(void *data, struct wl_callback *callback, uint32_t time)
     glBindTexture(GL_TEXTURE_2D, window->gl.texture_id);
     // Set the sampler texture unit to 0
     glUniform1i(window->gl.sampler, 0);
+
+    // Render primitives from array data.
+    // mode: specifies what kind of primitive to render.
+    // count: specifies the number of elements to be rendered.
+    // type: specifies the type of the value in indices.
+    // indices: specifies the type of the values in indices.
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 
 	window->callback = wl_surface_frame(window->surface);
