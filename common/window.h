@@ -39,6 +39,8 @@ struct window {
 		GLuint rotation_uniform;
 		GLuint pos;
 		GLuint col;
+		GLuint texture_id; // Texture handle.
+		GLint sampler;     // Sampler location.
 	} gl;
 
 	struct wl_egl_window *native;
