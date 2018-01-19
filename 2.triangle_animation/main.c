@@ -31,6 +31,10 @@
 #include "../common/common.h"
 #include "../common/window.h"
 
+// The main purpose of the vertex shader is to transform 3D coordinates 
+// into different 3D coordinates (more on that later) and the vertex shader
+// allows us to do some basic processing on the vertex attributes.
+// https://learnopengl.com/#!Getting-started/Hello-Triangle
 const char *vert_shader_text =
 	"uniform mat4 rotation;\n"
 	"attribute vec4 pos;\n"
