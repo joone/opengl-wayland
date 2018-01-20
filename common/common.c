@@ -2,7 +2,6 @@
 #include <signal.h>
 #include <stdio.h>
 
-#include "common.h"
 #include "window.h"
 
 void init_egl(struct display* display, int opaque) {
