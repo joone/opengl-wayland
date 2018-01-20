@@ -128,10 +128,23 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
       {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 
   angle = 60 * M_PI / 180.0;
-  rotation[0][0] = cos(angle);
+  // Rotate around the X axis.
+  /* rotation[1][1] = cos(angle);
+  rotation[1][2] = sin(angle);
+  rotation[2][1] = -sin(angle);
+  rotation[2][2] = cos(angle);*/
+   
+  // Rotate around the Y axis.
+  /* rotation[0][0] = cos(angle);
   rotation[0][2] = sin(angle);
   rotation[2][0] = -sin(angle);
-  rotation[2][2] = cos(angle);
+  rotation[2][2] = cos(angle);*/
+  
+  // Rotate around the Z axis.
+  rotation[0][0] = cos(angle);
+  rotation[0][1] = sin(angle);
+  rotation[1][0] = -sin(angle);
+  rotation[1][1] = cos(angle);
 
   struct wl_region* region;
 
