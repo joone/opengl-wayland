@@ -45,9 +45,10 @@ const char* vert_shader_text =
     "layout(location = 0) in vec4 a_position;   \n"
     "layout(location = 1) in vec2 a_texCoord;   \n"
     "out vec2 v_texCoord;                       \n"
+    "uniform mat4 rotation;                     \n"
     "void main()                                \n"
     "{                                          \n"
-    "   gl_Position = a_position;               \n"
+    "   gl_Position = rotation * a_position;    \n"
     "   v_texCoord = a_texCoord;                \n"
     "}                                          \n";
 
@@ -122,6 +123,16 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   // GLushort indices[] = {0, 1, 2, 0, 2, 3};
   // GLushort indices[] = {0, 2, 3, 0, 1, 2};
   GLushort indices[] = {1 ,2, 0, 2, 3, 0};
+  GLfloat angle;
+  GLfloat rotation[4][4] = {
+      {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+
+  angle = 60 * M_PI / 180.0;
+  rotation[0][0] = cos(angle);
+  rotation[0][2] = sin(angle);
+  rotation[2][0] = -sin(angle);
+  rotation[2][2] = cos(angle);
+
   struct wl_region* region;
 
   assert(window->callback == callback);
@@ -135,6 +146,9 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
 
   // Set the viewport.
   glViewport(0, 0, window->geometry.width, window->geometry.height);
+
+  glUniformMatrix4fv(window->gl.rotation_uniform, 1, GL_FALSE,
+                     (GLfloat*)rotation);
 
   // Clear the color buffer.
   glClearColor(0.0, 0.0, 0.0, 1.0);
