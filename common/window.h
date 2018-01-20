@@ -1,3 +1,6 @@
+#ifndef WINDOW_H_
+#define WINDOW_H_
+
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
@@ -68,3 +71,5 @@ void usage(int error_code);
 const struct wl_callback_listener frame_listener;
 const struct wl_registry_listener registry_listener;
 static int running = 1;
+
+#endif
