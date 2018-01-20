@@ -1,7 +1,6 @@
 /*
  * Copyright © 2011 Benjamin Franzke
  * Copyright © 2017 Joone Hur
- * Copyright (c) 2013 Dan Ginsburg, Budirijanto Purnomo
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,12 +21,13 @@
  * OF THIS SOFTWARE.
  */
 
-// simple_texture2D.c
 //
-//    This is a simple example that draws a quad with a 2D
-//    texture image. The purpose of this example is to demonstrate
-//    the basics of 2D texturing
+// This is a simple example that draws a quad with a 2D
+// texture image. The purpose of this example is to demonstrate
+// the basics of 2D texturing.
 //
+// Some of code comes from the below example:
+// https://github.com/danginsburg/opengles3-book/blob/master/Chapter_9/Simple_Texture2D/Simple_Texture2D.c
 
 #include <assert.h>
 #include <math.h>
