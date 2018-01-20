@@ -118,7 +118,10 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
       1.0f,  0.0f          // TexCoord 3
   };
 
-  GLushort indices[] = {0, 1, 2, 0, 2, 3};
+  // The below sets of indices have the same result:
+  // GLushort indices[] = {0, 1, 2, 0, 2, 3};
+  // GLushort indices[] = {0, 2, 3, 0, 1, 2};
+  GLushort indices[] = {1 ,2, 0, 2, 3, 0};
   struct wl_region* region;
 
   assert(window->callback == callback);
