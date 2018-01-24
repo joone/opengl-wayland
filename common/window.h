@@ -44,6 +44,7 @@ struct window {
     GLuint col;
     GLuint texture_id;  // Texture handle.
     GLint sampler;      // Sampler location.
+	GLuint vertexBuffer[3];   // Vertex Buffer.
   } gl;
 
   struct wl_egl_window* native;

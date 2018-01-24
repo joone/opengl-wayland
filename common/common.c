@@ -103,6 +103,11 @@ void init_gl(struct window* window,
   window->gl.pos = 0;
   window->gl.col = 1;
 
+  // VertexBufferObject IDs
+  window->gl.vertexBuffer[0] = 0;
+  window->gl.vertexBuffer[1] = 0;
+  window->gl.vertexBuffer[2] = 0;
+
   glBindAttribLocation(program, window->gl.pos, "pos");
   glBindAttribLocation(program, window->gl.col, "color");
   glLinkProgram(program);
