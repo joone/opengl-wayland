@@ -15,18 +15,21 @@
 
 // #version 300 es
 const char* vertexShaderSource =
-    "attribute vec4 pos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = pos;\n"
-    "}\0";
+    "#version 300 es                          \n"
+    "layout(location = 0) in vec4 position;   \n"
+    "void main()                              \n"
+    "{                                        \n"
+    "   gl_Position = position;  \n"
+    "}";
 
 const char* fragmentShaderSource =
-    "precision mediump float;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-    "}\n\0";
+    "#version 300 es                                 \n"
+    "precision mediump float;                        \n"
+    "layout(location = 0) out vec4 out_color;    \n"
+    "void main()                                     \n"
+    "{                                               \n"
+    "   out_color = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+    "}                                               \n";
 
 void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   struct window* window = data;
