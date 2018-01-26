@@ -17,7 +17,7 @@ simple_texture : ./4.simple_texture/main.o  ./common/common.o ./common/window.o
 rotate_texture : ./5.rotate_texture/main.o  ./common/common.o ./common/window.o
 	gcc ./5.rotate_texture/main.c ./common/common.c ./common/window.c ${CFLAGS} -o $@ ${LIBS}
 
-triangle_color : ./6.triangle_color/main.o  ./common/common.o ./common/window.o
+triangle_color : ./6.triangle_color/main.o  ./common/common.o ./common/window.o ./common/transform.o
 	gcc ./6.triangle_color/main.c ./common/common.c ./common/window.c ${CFLAGS} -o $@ ${LIBS}
 
 clean:
