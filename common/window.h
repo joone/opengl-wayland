@@ -11,6 +11,11 @@
 struct window;
 struct seat;
 
+typedef struct
+{
+   GLfloat   m[4][4];
+} ESMatrix;
+
 struct display {
   struct wl_display* display;
   struct wl_registry* registry;
@@ -39,12 +44,15 @@ struct window {
   struct display* display;
   struct geometry geometry, window_size;
   struct {
+    GLuint program;
     GLuint rotation_uniform;
     GLuint pos;
     GLuint col;
     GLuint texture_id;  // Texture handle.
     GLint sampler;      // Sampler location.
 	GLuint vertexBuffer[3];   // Vertex Buffer.
+    GLuint mvpLoc; // Uniform location.
+    ESMatrix mvpMatrix;
   } gl;
 
   struct wl_egl_window* native;

@@ -12,16 +12,11 @@
 
 #include "window.h"
 
-typedef struct
-{
-   GLfloat   m[4][4];
-} ESMatrix;
-
 void init_egl(struct display* display, int opaque);
 void fini_egl(struct display* display);
 void init_gl(struct window* window,
-             const char* vert_shader_text,
-             const char* frag_shader_text);
+	 const char* vert_shader_text,
+	 const char* frag_shader_text);
 
 #define ESUTIL_API
 //

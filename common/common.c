@@ -78,27 +78,26 @@ void init_gl(struct window* window,
              const char* vert_shader_text,
              const char* frag_shader_text) {
   GLuint frag, vert;
-  GLuint program;
   GLint status;
 
   frag = create_shader(frag_shader_text, GL_FRAGMENT_SHADER);
   vert = create_shader(vert_shader_text, GL_VERTEX_SHADER);
 
-  program = glCreateProgram();
-  glAttachShader(program, frag);
-  glAttachShader(program, vert);
-  glLinkProgram(program);
+  window->gl.program = glCreateProgram();
+  glAttachShader(window->gl.program, frag);
+  glAttachShader(window->gl.program, vert);
+  glLinkProgram(window->gl.program);
 
-  glGetProgramiv(program, GL_LINK_STATUS, &status);
+  glGetProgramiv(window->gl.program, GL_LINK_STATUS, &status);
   if (!status) {
     char log[1000];
     GLsizei len;
-    glGetProgramInfoLog(program, 1000, &len, log);
+    glGetProgramInfoLog(window->gl.program, 1000, &len, log);
     fprintf(stderr, "Error: linking:\n%*s\n", len, log);
     exit(1);
   }
 
-  glUseProgram(program);
+  glUseProgram(window->gl.program);
 
   window->gl.pos = 0;
   window->gl.col = 1;
@@ -108,10 +107,10 @@ void init_gl(struct window* window,
   window->gl.vertexBuffer[1] = 0;
   window->gl.vertexBuffer[2] = 0;
 
-  glBindAttribLocation(program, window->gl.pos, "pos");
-  glBindAttribLocation(program, window->gl.col, "color");
-  glLinkProgram(program);
+  glBindAttribLocation(window->gl.program, window->gl.pos, "pos");
+  glBindAttribLocation(window->gl.program, window->gl.col, "color");
+  glLinkProgram(window->gl.program);
 
   // Return the location of a uniform variable.
-  window->gl.rotation_uniform = glGetUniformLocation(program, "rotation");
+  window->gl.rotation_uniform = glGetUniformLocation(window->gl.program, "rotation");
 }
