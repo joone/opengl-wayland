@@ -17,13 +17,13 @@
 const char* vertexShaderSource =
     "#version 300 es                            \n"
     "uniform mat4 u_mvpMatrix;                  \n"
-    "layout(location = 0) in vec4 a_position;   \n"
-    "layout(location = 1) in vec4 a_color;      \n"
+    "layout(location = 0) in vec4 pos;          \n"
+    "layout(location = 1) in vec4 color;        \n"
     "out vec4 v_color;                          \n"
     "void main()                                \n"
     "{                                          \n"
-    "  v_color = a_color;                       \n"
-    "  gl_Position = u_mvpMatrix * a_position; \n"
+    "  v_color = color;                         \n"
+    "  gl_Position = u_mvpMatrix * pos;         \n"
     "}";
 
 const char* fragmentShaderSource =
@@ -52,7 +52,6 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
 
   float aspect;
 
-
   if (callback)
     wl_callback_destroy(callback);
 
@@ -74,7 +73,7 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   esMatrixLoadIdentity(&modelview);
 
   // Translate away from the viewer
-  esTranslate( &modelview, 0.0, 0.0, -2.0 );
+  esTranslate(&modelview, 0.0, 0.0, -2.0 );
 
   // Rotate the cube
   GLfloat angle = 60 * M_PI / 180.0;
@@ -123,24 +122,6 @@ int main(int argc, char** argv) {
   create_surface(&window);
   init_gl(&window, vertexShaderSource, fragmentShaderSource);
   
-  // Allocate storage to store MVP.
-/*  glGenBuffers(1, &window.gl.mvpVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, window.gl.mvpVBO );
-  glBufferData(GL_ARRAY_BUFFER, sizeof(ESMatrix), NULL, GL_DYNAMIC_DRAW);
-
-  // for creating a perspective matrix.
-  esMatrixLoadIdentity(&window.gl.perspective);
-  float aspect = window.window_size.width / window.window_size.height;
-  esPerspective(&window.gl.perspective, 60.0f, aspect, 1.0f, 20.0f);
-
-
-  ESMatrix modelview;
-  esMatrixLoadIdentity(&modelview);
-  esRotate(&modelview, 0.7, 1.0, 0.0, 1.0);
-  esMatrixMultiply(&window.gl.matrix, &modelview, &window.gl.perspective);
-*/
-
-
   // Get the uniform locations
   window.gl.mvpLoc = glGetUniformLocation(window.gl.program, "u_mvpMatrix");
   display.cursor_surface = wl_compositor_create_surface(display.compositor);
