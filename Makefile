@@ -1,7 +1,7 @@
 LIBS = -lGLESv2 -lEGL -lm -lX11  -lcairo -lwayland-client -lwayland-server -lwayland-cursor -lwayland-egl
 CFLAGS =-g -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libdrm -I/usr/include/libpng12  -I/usr/include
 
-all: triangle_animation triangle triangle_simple simple_texture rotate_texture triangle_color mvp_triangle \
+all: triangle_animation triangle triangle_simple simple_texture rotate_texture triangle_color mvp_triangle cube \
 
 triangle_animation : ./2.triangle_animation/main.o  ./common/common.o ./common/window.o
 	gcc ./2.triangle_animation/main.c ./common/common.c ./common/window.c ${CFLAGS} -o $@ ${LIBS}
@@ -23,6 +23,9 @@ triangle_color : ./6.triangle_color/main.o  ./common/common.o ./common/window.o 
 mvp_triangle : ./7.mvp_triangle/main.o  ./common/common.o ./common/window.o ./common/transform.o
 	gcc ./7.mvp_triangle/main.c ./common/common.c ./common/window.c ./common/transform.c ${CFLAGS} -o $@ ${LIBS}
 
+cube : ./8.cube/main.o  ./common/common.o ./common/window.o ./common/transform.o
+	gcc ./8.cube/main.c ./common/common.c ./common/window.c ./common/transform.c ${CFLAGS} -o $@ ${LIBS}
+
 clean:
 	rm -f 1.triangle/*.o *~ 
 	rm -f triangle
@@ -38,3 +41,5 @@ clean:
 	rm -f triangle_color
 	rm -f 7.mvp_triangle/*.o *~ 
 	rm -f mvp_triangle
+	rm -f 8.cube/*.o *~ 
+	rm -f 8.cube
