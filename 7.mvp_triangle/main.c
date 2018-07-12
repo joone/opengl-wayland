@@ -1,6 +1,8 @@
 //
 // Triangle example
 //
+// Shader code came from OpenGL(R) ES 3.0 Programming Guide, 2nd Edition
+// Simple_VertexShader.c
 
 #include <assert.h>
 #include <math.h>
