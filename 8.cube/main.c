@@ -38,18 +38,21 @@ const char* vertexShaderSource =
     "uniform mat4 u_mvpMatrix;                  \n"
     "layout(location = 0) in vec4 pos;          \n"
     "layout(location = 1) in vec4 color;        \n"
+    "out vec4 vVaryingColor;                \n"
     "void main()                                \n"
     "{                                          \n"
     "  gl_Position = u_mvpMatrix * pos;         \n"
+    "  vVaryingColor = color;                   \n"
     "}";
 
 const char* fragmentShaderSource =
     "#version 300 es                                 \n"
     "precision mediump float;                        \n"
     "layout(location = 0) out vec4 out_color;        \n"
+    "in lowp vec4 vVaryingColor;                    \n"
     "void main()                                     \n"
     "{                                               \n"
-    "   out_color = vec4(1.0f, 0.0f, 0.0f, 1.0f);    \n"
+    "   out_color = vVaryingColor;                   \n"
     "}                                               \n";
 
 void redraw(void* data, struct wl_callback* callback, uint32_t time) {
@@ -92,6 +95,38 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
       +1.0f, -1.0f, +1.0f  // point magenta
   };
 
+  static const GLfloat vColors[] = {
+      // frontL white
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      1.0f, 1.0f, 1.0f,
+      // back: red
+      1.0f, 0.0f, 0.0f,
+      1.0f, 0.0f, 0.0f,
+      1.0f, 0.0f, 0.0f,
+      1.0f, 0.0f, 0.0f,
+      // right
+      0.0f, 1.0f, 0.0f,
+      0.0f, 1.0f, 0.0f,
+      0.0f, 1.0f, 0.0f,
+      0.0f, 1.0f, 0.0f,
+      // left
+      0.0f, 0.0f, 1.0f,
+      0.0f, 0.0f, 1.0f,
+      0.0f, 0.0f, 1.0f,
+      0.0f, 0.0f, 1.0f,
+      // top: yellow
+      1.0f, 1.0f, 0.0f,
+      1.0f, 1.0f, 0.0f,
+      1.0f, 1.0f, 0.0f,
+      1.0f, 1.0f, 0.0f,
+      // bottom: purple
+      1.0f, 0.0f, 1.0f,
+      1.0f, 0.0f, 1.0f,
+      1.0f, 0.0f, 1.0f,
+      1.0f, 0.0f, 1.0f
+  };
 
   struct wl_region* region;
   assert(window->callback == callback);
@@ -109,6 +144,7 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
 
   glClearColor(0.5, 0.5, 0.5, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
+  glEnable(GL_CULL_FACE);
   
   aspect = window->geometry.width / window->geometry.height;
 
@@ -141,6 +177,9 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
   glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
   glDisableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, vColors);
+  glEnableVertexAttribArray(1);
 
   wl_surface_set_opaque_region(window->surface, NULL);
   window->callback = wl_surface_frame(window->surface);
