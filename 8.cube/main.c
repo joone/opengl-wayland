@@ -56,6 +56,7 @@ const char* fragmentShaderSource =
 
 void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   struct window* window = data;
+  static i = 0;
 
   ESMatrix perspective;
   ESMatrix modelview;
@@ -108,36 +109,39 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
 
   glViewport(0, 0, window->geometry.width, window->geometry.height);
 
-  glClearColor(0.0, 0.0, 1.0, 0.5);
+  glClearColor(0.5, 0.5, 0.5, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
   
   aspect = window->geometry.width / window->geometry.height;
 
   // Generate a perspective matrix with a 60 degree FOV.
-  esMatrixLoadIdentity(&perspective );
-  esPerspective(&perspective, 60.0f, aspect, 1.0f, 20.0f);
-
-  // Generate a model view matrix to rotate/translate the triangle. 
+  esMatrixLoadIdentity(&perspective);
+  //Render a small cube.
+  //esFrustum(&perspective, -2.8f, +2.8f, -2.8f * aspect, +2.8f * aspect, 6.0f,
+  //          12.0f);
+  // Draw a large cube.
+  esPerspective(&perspective, 29.0f, aspect, 1.0f, 20.0f);
+  i++;
   esMatrixLoadIdentity(&modelview);
+  esTranslate(&modelview, 0.0f, 0.0f, -8.0f);
+  esRotate(&modelview, 45.0f + (0.25f * i), 1.0f, 0.0f, 0.0f);
+  esRotate(&modelview, 45.0f - (0.5f * i), 0.0f, 1.0f, 0.0f);
+  esRotate(&modelview, 10.0f + (0.15f * i), 0.0f, 0.0f, 1.0f);
 
-  // Translate away from the viewer
-  esTranslate(&modelview, 0.0, 0.0, -2.0 );
-
-  // Rotate the cube
-  GLfloat angle = 45 * M_PI / 180.0;
-  esRotate(&modelview, angle, 1.0, 0.0, 1.0);
-
-  // Compute the final MVP by multiplying the
-  // modevleiw and perspective matrices together
   esMatrixMultiply(&window->gl.mvpMatrix, &modelview, &perspective);
 
   // Load the MVP matrix
   glUniformMatrix4fv(window->gl.mvpLoc, 1, GL_FALSE,
      (GLfloat*)&window->gl.mvpMatrix.m[0][0]);
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, vertices);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
   glEnableVertexAttribArray(0);
-  glDrawArrays(GL_TRIANGLES, 0, 12*3);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
   glDisableVertexAttribArray(0);
 
   wl_surface_set_opaque_region(window->surface, NULL);
