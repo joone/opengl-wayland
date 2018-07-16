@@ -38,10 +38,8 @@ const char* vertexShaderSource =
     "uniform mat4 u_mvpMatrix;                  \n"
     "layout(location = 0) in vec4 pos;          \n"
     "layout(location = 1) in vec4 color;        \n"
-    "out vec4 v_color;                          \n"
     "void main()                                \n"
     "{                                          \n"
-    "  v_color = color;                         \n"
     "  gl_Position = u_mvpMatrix * pos;         \n"
     "}";
 
