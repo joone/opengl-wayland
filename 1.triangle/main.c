@@ -46,8 +46,9 @@ const char* frag_shader_text =
 
 void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   struct window* window = data;
-  static const GLfloat verts[] = {0.0f, 0.5f, 0.0f,  -0.5, -0.5f,
-                                  0.0f, 0.5f, -0.5f, 0.0f};
+  static const GLfloat verts[] = { 0.0f, 0.5f, 0.0f,
+                                   -0.5, -0.5f, 0.0f,
+                                   0.5f, -0.5f, 0.0f };
 
   struct wl_region* region;
 
@@ -69,15 +70,22 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   // Load the vertex data.
   // window->gl.pos = 0
   // The pos variable is bounded to attribue location 0.
-  // Call glVertextAttribPointer to load the data into vertex attribue 0.
+  // Call glVertextAttribPointer to load the data into vertex attribute 0.
+  // (0 is a reserved location in GPU memory)
   glVertexAttribPointer(window->gl.pos, 3, GL_FLOAT, GL_FALSE, 0, verts);
   glEnableVertexAttribArray(window->gl.pos);
 
+  // mode: specifies what kind of primitives to render: GL_POINTS, GL_LINES..
+  // first: the starting index in the enabled arrays:
+  // count: specifies the number of indices to be rendered.
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
   glDisableVertexAttribArray(window->gl.pos);
 
+  // Set a object of wl_callback interface. 이는 서버에서 해당 buffer 를 이용하여
+  // surface 를 변경하고 나서 클라이언트에게 완료 이벤트를 넘겨주기 위해 사용하는 것이다.
   window->callback = wl_surface_frame(window->surface);
+  // Allow to call redraw() again.
   wl_callback_add_listener(window->callback, &frame_listener, window);
 
   eglSwapBuffers(window->display->egl.dpy, window->egl_surface);

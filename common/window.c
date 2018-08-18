@@ -76,6 +76,7 @@ void create_surface(struct window* window) {
   struct display* display = window->display;
   EGLBoolean ret;
 
+  // Ask the wayland compositor to create a surfae for client.
   window->surface = wl_compositor_create_surface(display->compositor);
   window->shell_surface =
       wl_shell_get_shell_surface(display->shell, window->surface);
