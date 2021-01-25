@@ -37,7 +37,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/common.h"
+#include "../common/display.h"
+#include "../common/wayland_platform.h"
 #include "../common/window.h"
 
 const char* vert_shader_text =
@@ -106,8 +107,9 @@ GLuint CreateSimpleTexture2D() {
   return textureId;
 }
 
-void redraw(void* data, struct wl_callback* callback, uint32_t time) {
-  struct window* window = data;
+void redraw(WaylandWindow* window) {
+  WaylandPlatform* platform = WaylandPlatform::getInstance();
+
   GLfloat vVertices[] = {
       -0.5f, 0.5f,  0.0f,  // Position 0
       0.0f,  0.0f,         // TexCoord 0
@@ -146,21 +148,10 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   rotation[1][0] = -sin(angle);
   rotation[1][1] = cos(angle);
 
-  struct wl_region* region;
-
-  assert(window->callback == callback);
-  window->callback = NULL;
-
-  if (callback)
-    wl_callback_destroy(callback);
-
-  if (!window->configured)
-    return;
-
   // Set the viewport.
   glViewport(0, 0, window->geometry.width, window->geometry.height);
 
-  glUniformMatrix4fv(window->gl.rotation_uniform, 1, GL_FALSE,
+  glUniformMatrix4fv(platform->getGL()->rotation_uniform, 1, GL_FALSE,
                      (GLfloat*)rotation);
 
   // Clear the color buffer.
@@ -187,9 +178,9 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
 
   // Bind the texture
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, window->gl.texture_id);
+  glBindTexture(GL_TEXTURE_2D, platform->getGL()->texture_id);
   // Set the sampler texture unit to 0
-  glUniform1i(window->gl.sampler, 0);
+  glUniform1i(platform->getGL()->sampler, 0);
 
   // Render primitives from array data.
   // mode: specifies what kind of primitive to render.
@@ -197,65 +188,19 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   // type: specifies the type of the value in indices.
   // indices: specifies the type of the values in indices.
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-
-  window->callback = wl_surface_frame(window->surface);
-  wl_callback_add_listener(window->callback, &frame_listener, window);
-
-  eglSwapBuffers(window->display->egl.dpy, window->egl_surface);
 }
 
 int main(int argc, char** argv) {
-  struct sigaction sigint;
-  struct display display = {0};
-  struct window window = {0};
-  int i, ret = 0;
+  std::unique_ptr<WaylandPlatform> waylandPlatform = WaylandPlatform::create();
+  
+  int width = 250;
+  int height = 250;
+  waylandPlatform->createWindow(width, height,vert_shader_text,
+      frag_shader_text, redraw);
 
-  window.display = &display;
-  display.window = &window;
-  window.window_size.width = 250;
-  window.window_size.height = 250;
-
-  display.display = wl_display_connect(NULL);
-  assert(display.display);
-
-  display.registry = wl_display_get_registry(display.display);
-  wl_registry_add_listener(display.registry, &registry_listener, &display);
-
-  wl_display_dispatch(display.display);
-
-  init_egl(&display, window.opaque);
-  create_surface(&window);
-  init_gl(&window, vert_shader_text, frag_shader_text);
-  window.gl.texture_id = CreateSimpleTexture2D();
-
-  display.cursor_surface = wl_compositor_create_surface(display.compositor);
-
-  sigint.sa_handler = signal_int;
-  sigemptyset(&sigint.sa_mask);
-  sigint.sa_flags = SA_RESETHAND;
-  sigaction(SIGINT, &sigint, NULL);
-
-  while (running && ret != -1)
-    ret = wl_display_dispatch(display.display);
-
-  fprintf(stderr, "simple-egl exiting\n");
-
-  destroy_surface(&window);
-  fini_egl(&display);
-
-  wl_surface_destroy(display.cursor_surface);
-  if (display.cursor_theme)
-    wl_cursor_theme_destroy(display.cursor_theme);
-
-  if (display.shell)
-    wl_shell_destroy(display.shell);
-
-  if (display.compositor)
-    wl_compositor_destroy(display.compositor);
-
-  wl_registry_destroy(display.registry);
-  wl_display_flush(display.display);
-  wl_display_disconnect(display.display);
+  waylandPlatform->getGL()->texture_id = CreateSimpleTexture2D();
+  waylandPlatform->run();
+  waylandPlatform->terminate();
 
   return 0;
 }

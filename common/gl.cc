@@ -2,10 +2,13 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
+#include "gl.h"
 #include "window.h"
+#include "wayland_platform.h"    
 
-void init_egl(struct display* display, int opaque) {
+void GL::init_egl(WaylandDisplay* display, int opaque) {
   static const EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2,
                                            EGL_NONE};
 
@@ -29,7 +32,7 @@ void init_egl(struct display* display, int opaque) {
   if (opaque)
     config_attribs[9] = 0;
 
-  display->egl.dpy = eglGetDisplay(display->display);
+  display->egl.dpy = eglGetDisplay((EGLNativeDisplayType)display->display_);
   assert(display->egl.dpy);
 
   ret = eglInitialize(display->egl.dpy, &major, &minor);
@@ -46,7 +49,7 @@ void init_egl(struct display* display, int opaque) {
   assert(display->egl.ctx);
 }
 
-void fini_egl(struct display* display) {
+void GL::finish_egl(WaylandDisplay* display) {
   eglTerminate(display->egl.dpy);
   eglReleaseThread();
 }
@@ -74,43 +77,45 @@ static GLuint create_shader(const char* source, GLenum shader_type) {
   return shader;
 }
 
-void init_gl(struct window* window,
-             const char* vert_shader_text,
-             const char* frag_shader_text) {
+void GL::init_gl(unsigned width, unsigned height,
+    const char* vertShaderText, const char* fragShaderText) {
   GLuint frag, vert;
   GLint status;
 
-  frag = create_shader(frag_shader_text, GL_FRAGMENT_SHADER);
-  vert = create_shader(vert_shader_text, GL_VERTEX_SHADER);
+  viewportWidth_ = width;
+  viewportHeight_ = height;
 
-  window->gl.program = glCreateProgram();
-  glAttachShader(window->gl.program, frag);
-  glAttachShader(window->gl.program, vert);
-  glLinkProgram(window->gl.program);
+  frag = create_shader(fragShaderText, GL_FRAGMENT_SHADER);
+  vert = create_shader(vertShaderText, GL_VERTEX_SHADER);
 
-  glGetProgramiv(window->gl.program, GL_LINK_STATUS, &status);
+  program = glCreateProgram();
+  glAttachShader(program, frag);
+  glAttachShader(program, vert);
+  glLinkProgram(program);
+
+  glGetProgramiv(program, GL_LINK_STATUS, &status);
   if (!status) {
     char log[1000];
     GLsizei len;
-    glGetProgramInfoLog(window->gl.program, 1000, &len, log);
+    glGetProgramInfoLog(program, 1000, &len, log);
     fprintf(stderr, "Error: linking:\n%*s\n", len, log);
     exit(1);
   }
 
-  glUseProgram(window->gl.program);
+  glUseProgram(program);
 
-  window->gl.pos = 0;
-  window->gl.col = 1;
+  pos = 0;
+  col = 1;
 
   // VertexBufferObject IDs
-  window->gl.vertexBuffer[0] = 0;
-  window->gl.vertexBuffer[1] = 0;
-  window->gl.vertexBuffer[2] = 0;
+  vertexBuffer[0] = 0;
+  vertexBuffer[1] = 0;
+  vertexBuffer[2] = 0;
 
-  glBindAttribLocation(window->gl.program, window->gl.pos, "pos");
-  glBindAttribLocation(window->gl.program, window->gl.col, "color");
-  glLinkProgram(window->gl.program);
+  glBindAttribLocation(program, pos, "pos");
+  glBindAttribLocation(program, col, "color");
+  glLinkProgram(program);
 
   // Return the location of a uniform variable.
-  window->gl.rotation_uniform = glGetUniformLocation(window->gl.program, "rotation");
+  rotation_uniform = glGetUniformLocation(program, "rotation");
 }

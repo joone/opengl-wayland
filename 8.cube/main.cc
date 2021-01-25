@@ -29,7 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/common.h"
+#include "../common/matrix.h"
+#include "../common/display.h"
+#include "../common/wayland_platform.h"
 #include "../common/window.h"
 
 // #version 300 es
@@ -55,12 +57,12 @@ const char* fragmentShaderSource =
     "   out_color = vVaryingColor;                   \n"
     "}                                               \n";
 
-void redraw(void* data, struct wl_callback* callback, uint32_t time) {
-  struct window* window = data;
-  static i = 0;
+void redraw(WaylandWindow* window) {
+  WaylandPlatform* platform = WaylandPlatform::getInstance();
+  static int i = 0;
 
-  ESMatrix perspective;
-  ESMatrix modelview;
+  ged::Matrix modelview;
+  ged::Matrix projection;
 
  static const GLfloat vertices[] = {
       // front
@@ -128,17 +130,7 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
       1.0f, 0.0f, 1.0f
   };
 
-  struct wl_region* region;
-  assert(window->callback == callback);
-  window->callback = NULL;
-
   float aspect;
-
-  if (callback)
-    wl_callback_destroy(callback);
-
-  if (!window->configured)
-    return;
 
   glViewport(0, 0, window->geometry.width, window->geometry.height);
 
@@ -148,25 +140,24 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
   
   aspect = window->geometry.width / window->geometry.height;
 
-  // Generate a perspective matrix with a 60 degree FOV.
-  esMatrixLoadIdentity(&perspective);
   //Render a small cube.
   //esFrustum(&perspective, -2.8f, +2.8f, -2.8f * aspect, +2.8f * aspect, 6.0f,
   //          12.0f);
   // Draw a large cube.
-  esPerspective(&perspective, 29.0f, aspect, 1.0f, 20.0f);
+  projection.Perspective(29.0f, aspect, 1.0f, 20.0f);
   i++;
-  esMatrixLoadIdentity(&modelview);
-  esTranslate(&modelview, 0.0f, 0.0f, -8.0f);
-  esRotate(&modelview, 45.0f + (0.25f * i), 1.0f, 0.0f, 0.0f);
-  esRotate(&modelview, 45.0f - (0.5f * i), 0.0f, 1.0f, 0.0f);
-  esRotate(&modelview, 10.0f + (0.15f * i), 0.0f, 0.0f, 1.0f);
+  modelview.Translate(0.0f, 0.0f, -8.0f);
+  modelview.Rotate(45.0f + (0.25f * i), 1.0f, 0.0f, 0.0f);
+  modelview.Rotate(45.0f - (0.5f * i), 0.0f, 1.0f, 0.0f);
+  modelview.Rotate(10.0f + (0.15f * i), 0.0f, 0.0f, 1.0f);
 
-  esMatrixMultiply(&window->gl.mvpMatrix, &modelview, &perspective);
+ // Compute the final MVP by multiplying the
+  // modevleiw and perspective matrices together
+  modelview.MatrixMultiply(projection);
 
   // Load the MVP matrix
-  glUniformMatrix4fv(window->gl.mvpLoc, 1, GL_FALSE,
-     (GLfloat*)&window->gl.mvpMatrix.m[0][0]);
+  glUniformMatrix4fv(platform->getGL()->mvpLoc, 1, GL_FALSE,
+     modelview.Data());
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
   glEnableVertexAttribArray(0);
@@ -180,65 +171,21 @@ void redraw(void* data, struct wl_callback* callback, uint32_t time) {
 
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, vColors);
   glEnableVertexAttribArray(1);
-
-  wl_surface_set_opaque_region(window->surface, NULL);
-  window->callback = wl_surface_frame(window->surface);
-  wl_callback_add_listener(window->callback, &frame_listener, window);
-
-  eglSwapBuffers(window->display->egl.dpy, window->egl_surface);
 }
 
 int main(int argc, char** argv) {
-  struct sigaction sigint;
-  struct display display = {0};
-  struct window window = {0};
-  int i, ret = 0;
-
-  window.display = &display;
-  display.window = &window;
-  window.window_size.width = 500;
-  window.window_size.height = 500;
-
-  display.display = wl_display_connect(NULL);
-  assert(display.display);
-
-  display.registry = wl_display_get_registry(display.display);
-  wl_registry_add_listener(display.registry, &registry_listener, &display);
-
-  wl_display_dispatch(display.display);
-
-  init_egl(&display, window.opaque);
-  create_surface(&window);
-  init_gl(&window, vertexShaderSource, fragmentShaderSource);
-
+  std::unique_ptr<WaylandPlatform> waylandPlatform = WaylandPlatform::create();
+  
+  int width = 500;
+  int height = 500;
+  waylandPlatform->createWindow(width, height, vertexShaderSource,
+      fragmentShaderSource, redraw);
+  
   // Get the uniform locations
-  window.gl.mvpLoc = glGetUniformLocation(window.gl.program, "u_mvpMatrix");
-  display.cursor_surface = wl_compositor_create_surface(display.compositor);
-
-  sigint.sa_handler = signal_int;
-  sigemptyset(&sigint.sa_mask);
-  sigint.sa_flags = SA_RESETHAND;
-  sigaction(SIGINT, &sigint, NULL);
-
-  while (running && ret != -1)
-    ret = wl_display_dispatch(display.display);
-
-  destroy_surface(&window);
-  fini_egl(&display);
-
-  wl_surface_destroy(display.cursor_surface);
-  if (display.cursor_theme)
-    wl_cursor_theme_destroy(display.cursor_theme);
-
-  if (display.shell)
-    wl_shell_destroy(display.shell);
-
-  if (display.compositor)
-    wl_compositor_destroy(display.compositor);
-
-  wl_registry_destroy(display.registry);
-  wl_display_flush(display.display);
-  wl_display_disconnect(display.display);
+  waylandPlatform->getGL()->mvpLoc = 
+       glGetUniformLocation(waylandPlatform->getGL()->program, "u_mvpMatrix");
+  waylandPlatform->run();
+  waylandPlatform->terminate();
 
   return 0;
 }
