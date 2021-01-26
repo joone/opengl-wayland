@@ -2,13 +2,6 @@
 // Triangle example
 // https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp
 //
-#include <assert.h>
-#include <math.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "../common/wayland_platform.h"
 #include "../common/display.h"

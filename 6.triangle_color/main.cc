@@ -12,14 +12,6 @@
 //    Joone makes this demo work in Wayland
 //
 
-#include <assert.h>
-#include <math.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "../common/display.h"
 #include "../common/wayland_platform.h"
 #include "../common/window.h"

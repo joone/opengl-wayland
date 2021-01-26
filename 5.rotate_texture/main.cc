@@ -29,14 +29,6 @@
 // Some of code comes from the below example:
 // https://github.com/danginsburg/opengles3-book/blob/master/Chapter_9/Simple_Texture2D/Simple_Texture2D.c
 
-#include <assert.h>
-#include <math.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "../common/display.h"
 #include "../common/wayland_platform.h"
 #include "../common/window.h"

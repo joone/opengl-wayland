@@ -1,8 +1,4 @@
 #include <assert.h>
-#include <linux/input.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "window.h"
 #include "wayland_platform.h"
@@ -14,7 +10,6 @@ void redraw(void* data, struct wl_callback* callback, unsigned int time);
 const struct wl_callback_listener frame_listener = {redraw};
 
 void redraw(void* data, struct wl_callback* callback, unsigned int time) {
-  printf("redraw\n");
   WaylandWindow* window = static_cast<WaylandWindow*>(data);
   struct wl_region* region;
 
@@ -28,7 +23,6 @@ void redraw(void* data, struct wl_callback* callback, unsigned int time) {
     return;
 
   window->drawPtr(window);
-
 
   if (window->opaque || window->fullscreen) {
     region = wl_compositor_create_region(window->display->compositor);

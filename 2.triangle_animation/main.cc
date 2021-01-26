@@ -20,17 +20,10 @@
  * OF THIS SOFTWARE.
  */
 
-#include <assert.h>
+#include <chrono>
 #include <ctime>
 #include <iostream>
-#include <math.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <chrono>
-#include <sys/time.h>
+//#include <sys/time.h>
 
 #include "../common/wayland_platform.h"
 #include "../common/display.h"
@@ -108,8 +101,7 @@ void redraw(WaylandWindow* window) {
 
 int main(int argc, char** argv) {
   std::unique_ptr<WaylandPlatform> waylandPlatform = WaylandPlatform::create();
-
-  struct sigaction sigint;
+  
   int width = 250;
   int height = 250;
 

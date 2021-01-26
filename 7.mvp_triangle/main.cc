@@ -4,14 +4,6 @@
 // Shader code came from OpenGL(R) ES 3.0 Programming Guide, 2nd Edition
 // Simple_VertexShader.c
 
-#include <assert.h>
-#include <math.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "../common/matrix.h"
 #include "../common/display.h"
 #include "../common/wayland_platform.h"
