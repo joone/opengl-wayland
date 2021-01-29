@@ -32,19 +32,15 @@ WaylandPlatform* WaylandPlatform::getInstance() {
 }
 
 bool WaylandPlatform::initialize() {
-  int i;
-
   display_ = std::make_unique<WaylandDisplay>();
   display_->InitializeDisplay();
  
   gl_ = std::make_unique<GL>();
-  // how to set opaque?
   gl_->init_egl(display_.get(), 0);
 
   return true;
 }
 
-// For creating a stage.
 void WaylandPlatform::createWindow(unsigned width, unsigned height,
     const char* vertShaderText, const char* fragShaderText,
     void (*drawPtr)(WaylandWindow*)) {

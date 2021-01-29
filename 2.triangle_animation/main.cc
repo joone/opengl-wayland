@@ -56,7 +56,6 @@ const char* frag_shader_text =
     "}\n";
 
 void redraw(WaylandWindow* window) {
-  WaylandPlatform* platform = WaylandPlatform::getInstance();
   static const GLfloat verts[3][2] = {{-0.5, -0.5}, {0.5, -0.5}, {0, 0.5}};
   static const GLfloat colors[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
   GLfloat angle;
@@ -82,26 +81,28 @@ void redraw(WaylandWindow* window) {
 
   glViewport(0, 0, window->geometry.width, window->geometry.height);
 
-  glUniformMatrix4fv(platform->getGL()->rotation_uniform, 1, GL_FALSE,
+  GL* gl = WaylandPlatform::getInstance()->getGL();
+
+  glUniformMatrix4fv(gl->rotation_uniform, 1, GL_FALSE,
                      (GLfloat*)rotation);
 
   glClearColor(0.0, 0.0, 0.0, 0.5);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glVertexAttribPointer(platform->getGL()->pos, 2, GL_FLOAT, GL_FALSE, 0, verts);
-  glVertexAttribPointer(platform->getGL()->col, 3, GL_FLOAT, GL_FALSE, 0, colors);
-  glEnableVertexAttribArray(platform->getGL()->pos);
-  glEnableVertexAttribArray(platform->getGL()->col);
+  glVertexAttribPointer(gl->pos, 2, GL_FLOAT, GL_FALSE, 0, verts);
+  glVertexAttribPointer(gl->col, 3, GL_FLOAT, GL_FALSE, 0, colors);
+  glEnableVertexAttribArray(gl->pos);
+  glEnableVertexAttribArray(gl->col);
 
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
-  glDisableVertexAttribArray(platform->getGL()->pos);
-  glDisableVertexAttribArray(platform->getGL()->col);
+  glDisableVertexAttribArray(gl->pos);
+  glDisableVertexAttribArray(gl->col);
 }
 
 int main(int argc, char** argv) {
   std::unique_ptr<WaylandPlatform> waylandPlatform = WaylandPlatform::create();
-  
+
   int width = 250;
   int height = 250;
 

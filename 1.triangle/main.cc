@@ -1,6 +1,6 @@
 /*
  * Copyright © 2011 Benjamin Franzke
- * Copyright © 2017 Joone Hur
+ * Copyright © 2017-2021 Joone Hur
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -21,8 +21,8 @@
  * OF THIS SOFTWARE.
  */
 
-#include "../common/wayland_platform.h"
 #include "../common/display.h"
+#include "../common/wayland_platform.h"
 #include "../common/window.h"
 
 const char* vert_shader_text =
@@ -38,27 +38,23 @@ const char* frag_shader_text =
     "}\n";
 
 void redraw(WaylandWindow* window) {
-  static const GLfloat verts[] = {0.0f, 0.5f, 0.0f,  -0.5, -0.5f,
-                                  0.0f, 0.5f, -0.5f, 0.0f};
-
-  WaylandPlatform* platform = WaylandPlatform::getInstance();
-
   // Set the viewport.
   glViewport(0, 0, window->geometry.width, window->geometry.height);
 
   // Clear the color buffer.
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
-  // Load the vertex data.
-  // window->gl.pos = 0
-  // The pos variable is bounded to attribue location 0.
-  // Call glVertextAttribPointer to load the data into vertex attribue 0.
-  glVertexAttribPointer(platform->getGL()->pos, 3, GL_FLOAT, GL_FALSE, 0, verts);
-  glEnableVertexAttribArray(platform->getGL()->pos);
+
+  static const GLfloat verts[] = { 0.0f, 0.5f, 0.0f,
+                                   -0.5, -0.5f, 0.0f,
+                                   0.5f, -0.5f, 0.0f };
+  GL* gl = WaylandPlatform::getInstance()->getGL();
+  glVertexAttribPointer(gl->pos, 3, GL_FLOAT, GL_FALSE, 0, verts);
+  glEnableVertexAttribArray(gl->pos);
 
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
-  glDisableVertexAttribArray(platform->getGL()->pos);
+  glDisableVertexAttribArray(gl->pos);
 }
 
 int main(int argc, char** argv) {
