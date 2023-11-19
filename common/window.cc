@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <cstdio>
 
 #include "window.h"
 #include "wayland_platform.h"
